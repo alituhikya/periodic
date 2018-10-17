@@ -1,0 +1,18 @@
+{application, periodic,
+ [
+  {description, "Periodic"},
+  {vsn, "0.0.1"},
+  {modules,[expirable_fsm,expirable_sup,periodic_app,periodic_env_utility,periodic_fsm,periodic_sup,periodic_util]},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+   {env, [
+     {env_app,periodic},
+     {expirable_supervisor_name,expirable_sup},
+     {periodic_supervisor_name,periodic_sup},
+     {top_supervisor_name,top_sup}
+   ]
+   }
+ ]}.

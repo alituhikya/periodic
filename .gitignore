@@ -1,0 +1,12 @@
+.idea/
+*.iml
+*.beam
+.eunit/
+ebin/
+logs/
+.log/
+.rebar/
+deps/
+Mnesia*/
+logs/
+rel/

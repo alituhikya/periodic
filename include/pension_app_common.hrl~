@@ -1,0 +1,211 @@
+
+%%%%----------------------------------------------------------------------------------------------------------
+%%%                                             CONSTANTS
+%%%%----------------------------------------------------------------------------------------------------------
+
+-define(max_amount, 5000000).
+-define(min_amount, 1000).
+
+%%%-------------------------------------------------------------------
+%%% @author alituhikyaj
+%%% @doc
+%%% ug_phone_regex => ^((\+256\s?)|0)7[0145789][0-9]\s?\d{6}$
+%%% erlang requires double slash: "^((\\+256\\s?)|0)7[0145789][0-9]\\s?\\d{6}$"
+%%% <a href ="http://erlang.org/pipermail/erlang-bugs/2012-November/003175.html">link<a>
+%%% regex for phone number any ugandan number
+%%% should match only ugandan networks that is 071, 077,078,079,074, 075,070
+%%% <b>examples:<b><br>
+%%% 0715726287
+%%% 0715 726287
+%%% +256715726287
+%%% +256 715726287
+%%% compiled to avoid recompiling each time re:run is called
+%%% @end
+%%%-------------------------------------------------------------------
+-define(ug_phone_regex, validator:get_compiled_re("^((\\+256\\s?)|0)7[0145789][0-9]\\s?\\d{6}$")).
+
+-define(ug_phone_mtn_regex, validator:get_compiled_re("^((\\+?256\\s?)|0)7[78][0-9]\\s?\\d{6}$")).
+-define(ug_phone_airtel_regex, validator:get_compiled_re("^((\\+?256\\s?)|0)7[05][0-9]\\s?\\d{6}$")).
+-define(ug_phone_africell_regex, validator:get_compiled_re("^((\\+?256\\s?)|0)79[0-9]\\s?\\d{6}$")).
+-define(ug_phone_utl_regex, validator:get_compiled_re("^((\\+?256\\s?)|0)71[0-9]\\s?\\d{6}$")).
+-define(ug_phone_smart_regex, validator:get_compiled_re("^((\\+?256\\s?)|0)74[0-9]\\s?\\d{6}$")).
+
+-define(white_space_regex, validator:get_compiled_re("(^\\s+)|(\\s+$)")).
+
+-define(underscore_global_regex, validator:get_compiled_re("(_)")).
+
+%%%-------------------------------------------------------------------
+%%% @author alituhikyaj
+%%% @doc
+%%% ug_phone_added_zero_regex,"^(\+?256\s?)07[0145789][0-9]\s?\d{6}$"
+%%% regex for phone number any ugandan number with added zero</br>
+%%% of adding a zero (0) after 256 and missing a plus + </br>
+%%% eg 2560712726287,256 0712726287... </br>
+%%% this check should be run after the valid ug_phone_regex since it accepts valid numbers also
+%%% @end
+%%%-------------------------------------------------------------------
+-define(ug_phone_added_zero_regex, validator:get_compiled_re("^(\\+?256\\s?)07[0145789][0-9]\\s?\\d{6}$")).
+
+%%%-------------------------------------------------------------------
+%%% @author alituhikyaj
+%%% @doc
+%%% ug_phone_missing_plus_regex,"^(256\s?)0?7[0145789][0-9]\s?\d{6}$"
+%%% regex for phone number any ugandan number with missing plus</br>
+%%% of adding a zero (0) after 256 and missing a plus + </br>
+%%% eg 256712726287, 2560712726287... </br>
+%%% this check should be run after the valid ug_phone_regex since it accepts valid numbers also
+%%% @end
+%%%-------------------------------------------------------------------
+-define(ug_phone_missing_plus_regex, validator:get_compiled_re("^(256\\s?)0?7[0145789][0-9]\\s?\\d{6}$")).
+
+-define(integer_regex, validator:get_compiled_re("^[0-9]*$")).
+
+
+
+
+-define(APP_NAME, pension).
+
+-define(COOKIE, a_thrift_prod).
+
+-define(MAX_RETRY_COUNT_DEFAULT, 0).
+
+-define(GUID_CHARACTERS, "ABCDEFGHIJKLMNPQRSTUVWXYZbdcefghijklmnpqrstuvwxyz123456789").
+
+-define(TRANSACTION_ID_LENGTH, 13).
+
+-define(NETWORKS, [mtn, airtel, utl, africell, smart]).
+
+%%%%----------------------------------------------------------------------------------------------------------
+%%%                                            Supervisor Names
+%%%%----------------------------------------------------------------------------------------------------------
+
+
+-define(TRANSACTION_SUPERVISOR_NAME, transaction_sup).
+
+-define(TRASACTION_ARCHIVER_SUP_NAME, transaction_archiver_sup).
+
+-define(QUEUE_CONTROLLER_SUP_NAME, queue_controller_sup).
+
+
+%%%%----------------------------------------------------------------------------------------------------------
+%%%                                             Error Messages
+%%%%----------------------------------------------------------------------------------------------------------
+-define(BAD_LENGTH_ERROR_MESSAGE, <<"the request is of bad length">>).
+
+-define(TRANSACTION_NAME_ERROR_MESSAGE, <<"error in transaction name">>).
+
+-define(AUTHENTICATION_ERROR_MESSAGE, <<"authentication error">>).
+
+-define(NOT_ENOUGH_FUNDS, <<"Not enough funds to complete this transaction">>).
+
+-define(COULD_NOT_COMPLETE_TRANSACTION, <<"could not complete transaction">>).
+
+-define(FATAL_ERROR_MESSAGE, <<"A severe error occured">>).
+
+-define(RETRY_MAX_EXCEDED_MESSAGE, <<"retry max exceded">>).
+
+
+%%%%----------------------------------------------------------------------------------------------------------
+%%%                                             STATES
+%%%%--------------------------------------------------------------------------------------
+
+-define(STATE_CREATED, created).
+-define(STATE_PROCESSING_ERROR, processing_error).
+-define(STATE_TRANSACTION_VALIDATED, transaction_validated).
+-define(STATE_NETWORK_FOUND, network_found).
+-define(STATE_TRANSACTION_PROCESS_STARTED, transaction_process_started).
+-define(STATE_INITIATE_OPERATION_SYNC_RUN, initiate_sync_run).
+-define(STATE_INITIATE_OPERATION_ASYNC_RUN, initiate_async_run).
+-define(STATE_TRANSACTION_ERROR_RETRY, trasaction_error_retty).
+-define(STATE_TRANSACTION_RETRY_FAILED, transaction_retry_failed).
+-define(STATE_PAYMENT_INITIALIZATION_FAILED,payment_initialization_failed).
+-define(STATE_TRANSACTION_RETRIED, transaction_retried).
+-define(STATE_TRANSACTION_REQUEUED, transaction_requeued).
+-define(STATE_MAX_RETRY_EXCEEDED, max_rerouted_exceeded).
+-define(STATE_ERROR_RETRY, retry_error).
+
+-define(STATE_PAYMENT_INITIALIZED, payment_initialized).
+-define(STATE_PAYMENT_CONFIRMED, payment_confirmed).
+-define(STATE_END_IN_ERROR, end_in_error).
+-define(STATE_TRANSACTION_PROCESS_TERMINATED, transaction_process_terminated).
+
+%%%%----------------------------------------------------------------------------------------------------------
+%%%                                          transaction   TYPES
+%%%%----------------------------------------------------------------------------------------------------------
+
+
+-define(TRANSACTION_TYPE_queued_async, [queued, async]).
+-define(TRANSACTION_TYPE_queued_sync, [queued, sync]).
+-define(TRANSACTION_TYPE_immediate_async, [immediate, async]).
+
+%%%%----------------------------------------------------------------------------------------------------------
+%%%                                             TYPES
+%%%%----------------------------------------------------------------------------------------------------------
+
+-type(amount() :: ?min_amount..?max_amount).
+-type(error() :: {error, term()}|{ok}).
+-type(network() :: mtn|utl|airtel|africell|smart|vodafone|smile).
+-record(http_async_return, {
+  status,
+  headers,
+  body =  <<"">>,
+  reason,
+  ref,
+  state,
+  message
+}).
+
+-record(pension_transaction,
+{operation,
+  transaction_id, %term() the transaction id
+  payment_api_transaction_id,
+  amount,
+  args_list,
+  api_user,
+  phone_number,
+  network, % the network this transaction belongs to
+  retry_count = 0,% the number of times this transaction has been sent to another com_fsm
+  max_retry_count = ?MAX_RETRY_COUNT_DEFAULT,
+  trace,
+  state = unknown, %% default unknown will be stored in the database
+  message,
+  archiver_pid,
+  initiate_payment_callback,
+  initiate_payment_url = <<"http://localhost:8080/mobile">>,
+  confirmation_payment_url,
+  processor = fun transaction_handler:async_processor/1, %% default processor will be the async processor
+  async_handler, %% the call back function to handle async transations
+  asyn_data, %% any async data that will be used by call back
+  retry_handler = fun transaction:handle_return_retry/1,
+  reroute_data,
+  confirmed = false,
+  user_name = unknown,
+  %type = ?TRANSACTION_TYPE_immediate_async, % atom(), {immediate |queued, async | sync }
+  type = ?TRANSACTION_TYPE_immediate_async,
+  reg_name,
+  initiate_payment_return = #http_async_return{}
+}).
+
+
+-record(pension_request_return, {
+  success :: atom(),
+  message :: term(),
+  transaction_id :: atom()
+}).
+
+-record(cassandra_settings,{
+cassandra_contact_point,
+cassandra_port,
+keyspace
+}).
+
+-record(payment_api_settings,{
+initiate_url,
+confirm_url,
+username,
+password
+}).
+-record(archiver_state, {transaction_id, archiver_id}).
+
+-record(queue_controller_state, {name, channel, delivery_tag, id}).
+
