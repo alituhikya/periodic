@@ -8,5 +8,5 @@ logs/
 .rebar/
 deps/
 Mnesia*/
-logs/
+ct_test/logs/
 rel/
