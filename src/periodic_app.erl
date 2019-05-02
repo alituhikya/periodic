@@ -44,7 +44,15 @@ start(normal, []) ->
 start({takeover, _OtherNode}, []) ->
   start_app().
 
-
+%%--------------------------------------------------------------------
+%% @private
+%% @doc
+%% This function will be called to start the app, it will start two supervisors
+%% the names other supervisors by default are expirable_sup and periodic_sup which can
+%% be changed throught the environment variables
+%%
+%% @end
+%%--------------------------------------------------------------------
 start_app()->
   io:format("starting.....~n"),
   [begin Start = application:start(A), io:format("~p~n", [Start]), io:format("~p~n", [A]) end || A <- ?APPS],
