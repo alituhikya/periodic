@@ -1,5 +1,5 @@
-# soap
-Periodic - Make it easy to create to run tasks periodically and do set up deferred tasks that can expire after a given time.
+# Periodic
+Periodic - Erlang library to make it easy to create to run tasks periodically and do set up deferred tasks that can expire after a given time.
 
 - Perform a task at certain intervals
 - Different interval functions eg exponential, linear, normal
